@@ -15,7 +15,6 @@ The aim of this project is to perform various analyses on the Olist dataset usin
 
 - Total Sales Over Time: Identify seasonal patterns, trends, and variations in sales over time.
 - Sales Distribution by Product Category: Determine the most popular product categories with high demand.
-- Price Analysis: Explore the distribution of product prices and identify common price ranges.
 
 ### Customer Behavior Analysis
 

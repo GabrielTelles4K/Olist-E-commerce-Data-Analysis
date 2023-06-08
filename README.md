@@ -9,7 +9,7 @@ This dataset represents real commercial data; however, it has been anonymized. R
 
 ## Analysis Goals
 
-The aim of this project is to perform various analyses on the Olist dataset using R and the following libraries: tidyverse, ggplot2, dplyr, tidyr, stringr, lubridate, and data.table. The analyses will focus on the following aspects:
+The aim of this project is to perform various analyses on the Olist dataset using R and the following libraries: tidyverse, ggplot2, dplyr, ggrepel, ggthemes, lubridate, and RColorBrewer. The analyses will focus on the following aspects:
 
 ### Sales Analysis
 
@@ -18,19 +18,11 @@ The aim of this project is to perform various analyses on the Olist dataset usin
 
 ### Customer Behavior Analysis
 
-- Recurring Customers Analysis: Identify loyal customers who make frequent purchases and analyze their buying behavior.
 - Geographical Analysis: Explore customer locations and identify regions with a high concentration of buyers.
-- Customer Value Analysis: Calculate the average purchase value per customer and identify high-value customers.
-
-### Product Analysis
-
-- Top Selling Products: Identify the most popular products based on quantity sold or revenue generated.
-- Product Reviews Analysis: Explore customer reviews to identify products with high customer satisfaction or recurring issues.
 
 ### Payment Analysis
 
 - Preferred Payment Methods: Identify the most commonly used payment methods by customers.
-- Delayed or Problematic Payments Analysis: Identify payment delays or recurring issues with specific payment methods.
 
 ### Customer Feedback Analysis
 
@@ -41,8 +33,8 @@ The aim of this project is to perform various analyses on the Olist dataset usin
 
 To get started with the analysis, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/olist-analysis.git`
-2. Install the required libraries: `install.packages(c("tidyverse", "ggplot2", "dplyr", "tidyr", "stringr", "lubridate", "data.table"))`
+1. Clone the repository: `git clone https://github.com/GabrielTelles4K/olist-analysis.git`
+2. Install the required libraries: `install.packages(c("tidyverse", "ggplot2", "ggthemes", "dplyr", "ggrepel", "lubridate", "RColorBrewer"))`
 3. Launch RStudio or your preferred R environment.
 4. Open the project file: `olist-analysis.Rproj`.
 5. Open the analysis script: `analysis.R`.

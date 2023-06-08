@@ -1,0 +1,154 @@
+# Load the necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(RColorBrewer)
+library(ggthemes)
+library(dplyr)
+library(ggrepel)
+
+#========================================================Total Sales Over Time=============================================================================================================================
+
+# Read the CSV file
+data <- read.csv("olist_orders_dataset.csv")
+
+# Filter only delivered orders
+data <- data %>% filter(order_status == "delivered")
+
+# Convert 'order_purchase_timestamp' column to date and time format
+data$order_purchase_timestamp <- as.POSIXct(data$order_purchase_timestamp, format = "%Y-%m-%d %H:%M:%S")
+
+# Create a new column for the year
+data <- data %>% mutate(Year = year(order_purchase_timestamp))
+
+# Create a new column for the quarter
+data <- data %>% mutate(Quarter = quarter(order_purchase_timestamp))
+
+# Calculate total sales per quarter and year
+sales_by_quarter <- data %>%
+  group_by(Year, Quarter) %>%
+  summarise(TotalSales = n())
+
+# Define the color palette
+colors <- brewer.pal(n = length(unique(sales_by_quarter$Year)), name = "Set1")
+
+# Plot the bar chart of total sales per quarter and year
+ggplot(sales_by_quarter, aes(x = factor(Quarter), y = TotalSales, fill = factor(Year))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = TotalSales), vjust = -0.5, color = "black", size = 3.5, position = position_dodge(width = 0.9)) +
+  labs(x = "Quarter", y = "Total Sales", title = "Total Sales per Quarter and Year") +
+  scale_fill_manual(values = colors) +
+  theme_bw() +
+  theme(plot.title = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        legend.title = element_blank(),
+        legend.position = "bottom")
+
+#=======================================================Sales Distribution by Product Category=============================================================================================================
+
+# Read the CSV file with product information
+products <- read.csv("olist_products_dataset.csv")
+
+# Read the CSV file with order item information
+order_items <- read.csv("olist_order_items_dataset.csv")
+
+# Combine the 'products' and 'order_items' data frames using the 'product_id' column
+combined_data <- inner_join(products, order_items, by = "product_id")
+
+# Calculate total sales by product category
+sales_by_category <- combined_data %>%
+  group_by(product_category_name) %>%
+  summarise(TotalSales = sum(price)) %>%
+  arrange(desc(TotalSales)) %>%
+  top_n(10)
+
+# Plot the bar chart of sales distribution by product category
+ggplot(sales_by_category, aes(x = reorder(product_category_name, TotalSales), y = TotalSales)) +
+  geom_bar(stat = "identity", fill = "#FF7F00") +
+  labs(x = "Product Category", y = "Total Sales", title = "Top 10 Best Selling Product Categories") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(size = 16, face = "bold"),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "none")
+
+#========================================================Geographical Analysis=============================================================================================================================
+
+# Load the dataset
+customers <- read.csv("olist_customers_dataset.csv")
+
+# Count the number of customers per state
+customer_state_counts <- customers %>%
+  group_by(customer_state) %>%
+  summarise(total_customers = n()) %>%
+  arrange(desc(total_customers))
+
+# Plot the bar chart of customer counts by state
+ggplot(customer_state_counts, aes(x = customer_state, y = total_customers)) +
+  geom_bar(stat = "identity", fill = "#0073C2FF") +
+  labs(x = "State", y = "Total Customers", title = "Total Customers by State") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Get the top state with the highest customer count
+top_state <- customer_state_counts$customer_state[1]
+
+# Filter customers from the state with the most buyers
+top_state_customers <- customers %>%
+  filter(customer_state == top_state)
+
+# Customer count by city in the state with the most buyers
+city_counts <- top_state_customers %>%
+  group_by(customer_city) %>%
+  summarise(total_customers = n()) %>%
+  arrange(desc(total_customers)) %>%
+  top_n(10)
+
+# Plot bar graph of cities that buy the most in the state with the most buyers
+ggplot(city_counts, aes(x = customer_city, y = total_customers, fill = customer_city)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Top 10 Cities with Most Customers in Top State",
+       x = "City",
+       y = "Total Customers") +
+  theme_minimal() +
+  coord_flip() +
+  geom_text(aes(label = total_customers),
+            position = position_dodge(width = 0.9),
+            vjust = -0.5,
+            color = "black",
+            size = 3) +
+  geom_label_repel(aes(label = total_customers),
+                   nudge_y = 1,
+                   size = 3)
+#=====================================================Preferred Payment Methods============================================================================================================================
+
+# Load the dataset
+payments <- read.csv("olist_order_payments_dataset.csv")
+
+# Count the frequency of each payment method
+payment_counts <- payments %>%
+  group_by(payment_type) %>%
+  summarise(total_payments = n()) %>%
+  arrange(desc(total_payments))
+
+# Define custom colors for the bar chart
+custom_colors <- c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF", "#55A868FF")
+
+# Plot a bar chart of the most used payment methods
+ggplot(payment_counts, aes(x = payment_type, y = total_payments, fill = payment_type)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Most Used Payment Methods",
+       x = "Payment Method",
+       y = "Total Payments") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_line(color = "black"),
+        legend.position = "none") +
+  scale_fill_manual(values = custom_colors)

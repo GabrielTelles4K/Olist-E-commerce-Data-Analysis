@@ -27,7 +27,6 @@ The aim of this project is to perform various analyses on the Olist dataset usin
 ### Customer Feedback Analysis
 
 - Sentiment Analysis in Reviews: Perform sentiment analysis on customer reviews to identify positive and negative opinions about products and services.
-- Feedback Trends: Identify key topics mentioned in reviews and analyze trends over time.
 
 ## Getting Started
 

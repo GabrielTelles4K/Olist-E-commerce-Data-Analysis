@@ -126,9 +126,12 @@ ggplot(city_counts, aes(x = customer_city, y = total_customers, fill = customer_
                    nudge_y = 1,
                    size = 3)
 #=====================================================Preferred Payment Methods============================================================================================================================
-
 # Load the dataset
 payments <- read.csv("olist_order_payments_dataset.csv")
+
+# Remove rows with payment_type "not_defined"
+payments <- payments %>%
+  filter(payment_type != "not_defined")
 
 # Count the frequency of each payment method
 payment_counts <- payments %>%
@@ -136,19 +139,59 @@ payment_counts <- payments %>%
   summarise(total_payments = n()) %>%
   arrange(desc(total_payments))
 
-# Define custom colors for the bar chart
-custom_colors <- c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF", "#55A868FF")
+# Calculate the percentage for each payment method
+payment_counts <- payment_counts %>%
+  mutate(percentage = total_payments / sum(total_payments) * 100)
 
-# Plot a bar chart of the most used payment methods
-ggplot(payment_counts, aes(x = payment_type, y = total_payments, fill = payment_type)) +
-  geom_bar(stat = "identity") +
+# Define custom colors for the pie chart
+custom_colors <- c("#1F77B4", "#FF7F0E", "#2CA02C", "#D62728", "#9467BD")
+
+# Plot a pie chart of the most used payment methods with percentages
+ggplot(payment_counts, aes(x = "", y = percentage, fill = payment_type)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
   labs(title = "Most Used Payment Methods",
-       x = "Payment Method",
-       y = "Total Payments") +
+       fill = "Payment Method",
+       x = NULL,
+       y = NULL) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.line = element_line(color = "black"),
-        legend.position = "none") +
-  scale_fill_manual(values = custom_colors)
+  theme(legend.position = "right") +
+  scale_fill_manual(values = custom_colors) +
+  geom_text(aes(label = paste0(round(percentage), "%")),
+            position = position_stack(vjust = 0.5),
+            color = "white",
+            size = 4,
+            show.legend = FALSE) +
+  guides(fill = guide_legend(title = "Payment Method"))
+
+
+#=====================================================Customer Review Ratings================================================================================================
+# Load the dataset
+reviews <- read.csv("olist_order_reviews_dataset.csv")
+
+# Count the number of reviews for each rating
+rating_counts <- reviews %>%
+  group_by(review_score) %>%
+  summarise(total_reviews = n())
+
+# Create a color palette
+colors <- c("#FFD700", "#FFA500", "#FF6347", "#B22222", "#800000")
+
+# Plot the pie chart of review ratings
+ggplot(rating_counts, aes(x = "", y = total_reviews, fill = factor(review_score))) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  labs(title = "Customer Review Ratings",
+       fill = "Rating",
+       x = NULL,
+       y = NULL) +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  scale_fill_manual(values = colors) +
+  geom_text(aes(label = paste0(total_reviews, " (", round(total_reviews / sum(total_reviews) * 100), "%)")),
+            position = position_stack(vjust = 0.5),
+            color = "white",
+            size = 4) +
+  guides(fill = guide_legend(title = "Rating"))
+
+#=================================================================================================================================================================

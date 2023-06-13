@@ -56,3 +56,7 @@ To start modifying the code and conducting your own analysis, follow these steps
 6. **Document Your Changes**: As you make modifications to the code, document your changes and any insights you uncover in the repository's README file. This will help others understand your analysis and contribute to the project if desired.
 
 7. **Commit and Push**: Once you are satisfied with your modifications, commit your changes and push them to your GitHub repository. This will make your analysis accessible
+
+## Olist
+
+https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
